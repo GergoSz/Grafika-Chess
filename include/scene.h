@@ -18,6 +18,8 @@ typedef struct Scene
     Model bishop;
     Material material;
     GLuint texture_id;
+    GLuint texture_id2;
+    GLuint texture_id3;
 } Scene;
 
 /**
