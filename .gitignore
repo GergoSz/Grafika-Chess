@@ -1,7 +1,6 @@
 # Object files
 *.o
 *.ko
-*.obj
 *.elf
 
 # Precompiled Headers
@@ -30,3 +29,5 @@
 
 # Debug files
 *.dSYM/
+ignore/*
+.vscode/*
