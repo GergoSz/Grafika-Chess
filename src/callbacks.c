@@ -107,6 +107,34 @@ void keyboard(unsigned char key, int x, int y)
             is_preview_visible = TRUE;
         }
         break;
+    case '5':
+        toggleSelected(&scene);
+        break;
+    case '1':
+        moveSelection(&scene, -1, -1);
+        break;
+    case '2':
+        moveSelection(&scene, -1, 0);
+        break;
+    case '3':
+        moveSelection(&scene, -1, 1);
+        break;
+    case '4':
+        moveSelection(&scene, 0, -1);
+        break;
+    
+    case '6':
+        moveSelection(&scene, 0, 1);
+        break;
+    case '7':
+        moveSelection(&scene, 1, -1);
+        break;
+    case '8':
+        moveSelection(&scene, 1, 0);
+        break;
+    case '9':
+        moveSelection(&scene, 1, 1);
+        break;
     }
 
     glutPostRedisplay();

@@ -34,8 +34,9 @@ typedef enum {
 
 typedef struct Qube
 {
-    
     int x,y;
+    int isLightQube;
+    QubeColor defaultColor;
     QubeColor color;
 
 }Qube;
@@ -45,6 +46,8 @@ typedef struct Board{
 
     Qube boardLayout[8][8];
     PieceType pieceLayout[8][8];
+    int selectedX;
+    int selectedY;
     /*Piece lightPieces[16];
     Piece darkPieces[16];*/
     
