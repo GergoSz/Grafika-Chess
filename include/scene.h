@@ -3,24 +3,28 @@
 
 #include "camera.h"
 #include "texture.h"
-
-#include <obj/model.h>
+#include "model.h"
+#include "board.h"
 
 typedef struct Scene
 {
     Camera camera;
     Model cube;
-	Model p;
-    Model king;
-    Model queen;
+	Model pawn;
     Model knight;
-    Model rook;
     Model bishop;
+    Model rook;
+    Model queen;
+    Model king;
+    Model skybox;
     Material material;
-    GLuint texture_id;
-    GLuint texture_id2;
-    GLuint texture_id3;
+    Board board;
+    GLuint light_texture;
+    GLuint dark_texture;
+    GLuint skybox_texture;
 } Scene;
+
+   //struct Model king;
 
 /**
  * Initialize the scene by loading models.
@@ -40,11 +44,13 @@ void set_material(const Material* material);
 /**
  * Draw the scene objects.
  */
-void draw_scene(const Scene* scene);
+void draw_scene( Scene* scene);
 
 /**
  * Draw the origin of the world coordinate system.
  */
 void draw_origin();
+
+void init_Board(Scene* scene);
 
 #endif /* SCENE_H */

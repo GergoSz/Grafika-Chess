@@ -4,11 +4,16 @@
 
 #include <math.h>
 
+#include "utils.h"
+#include "model.h"
+#include "scene.h"
+#include "camera.h"
+
 void init_camera(Camera* camera)
 {
-    camera->position.x = 1.564245; //x: 1.564245,y: 1.807708,z: 1.117000
-    camera->position.y = 1.807708;
-    camera->position.z = 1.117000;
+    camera->position.x = 3.564245; //x: 1.564245,y: 1.807708,z: 1.117000
+    camera->position.y = 3.807708;
+    camera->position.z = 3.117000;
     camera->rotation.x = 336.0; //x: 336.000000,y: 0.000000,z: 229.000000
     camera->rotation.y = 0.0;
     camera->rotation.z = 229.0;
@@ -24,6 +29,24 @@ void update_camera(Camera* camera, double time)
     double angle;
     double side_angle;
 	double vertical_angle;
+
+
+    //COLLISION FOR MAP EDGES
+    if (camera->position.x >= 20) {
+		camera->position.x += -1.0 * time;
+	}
+	else if (camera->position.x <= -5) {
+		camera->position.x += 1.0 * time;
+	}
+
+	if (camera->position.y >= 20) {
+    	camera->position.y += -1.0 * time;
+	}
+	else if (camera->position.y <= -5) {
+    	camera->position.y += 1.0 * time;
+	}
+   // check_piece_collisions(&(scene->king), camera);
+    //END OF COLLISION
 
     angle = degree_to_radian(camera->rotation.z);
     side_angle = degree_to_radian(camera->rotation.z + 90.0);
@@ -112,3 +135,19 @@ void show_texture_preview()
     glEnable(GL_DEPTH_TEST);
 }
 
+/*void check_piece_collisions(Model* model, Camera* camera) {
+	
+	double model_x = model->xpos + model->yoff;
+	double model_y = model->ypos + model->xoff;
+	double camera_x = camera->position.y;
+	double camera_y = camera->position.x;
+	double r_suare = pow(0.5, 2);
+	
+	if ( pow((camera_x - model_x), 2) + pow((camera_y - model_y), 2) <= r_suare ) {
+		printf("%lf %lf\n", camera_x, camera_y);
+	}
+	
+
+    //camera->position.y += 1.0 * time;
+	
+}*/

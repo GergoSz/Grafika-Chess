@@ -1,5 +1,6 @@
 #include "callbacks.h"
 
+
 #define VIEWPORT_RATIO (4.0 / 3.0)
 #define VIEWPORT_ASPECT 50.0
 
@@ -136,6 +137,8 @@ void idle()
     int current_time;
     double elapsed_time;
    
+    
+
     current_time = glutGet(GLUT_ELAPSED_TIME);
     elapsed_time = (double)(current_time - last_frame_time) / 1000;
     last_frame_time = current_time;

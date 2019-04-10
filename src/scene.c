@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "board.h"
 
 #include <GL/glut.h>
 
@@ -7,16 +8,19 @@
 
 void init_scene(Scene* scene)
 {
+    load_model(&(scene->skybox), "res/skybox.obj");
     load_model(&(scene->cube), "res/cube.obj");
-	load_model(&(scene->bishop), "res/bishop.obj");
-	load_model(&(scene->p), "res/pawn.obj");
-	load_model(&(scene->king), "res/king.obj");
-	load_model(&(scene->rook), "res/rook.obj");
+	load_model(&(scene->pawn), "res/pawn.obj");
 	load_model(&(scene->knight), "res/knight.obj");
+	load_model(&(scene->bishop), "res/bishop.obj");
+	load_model(&(scene->rook), "res/rook.obj");
+    load_model(&(scene->queen), "res/queen.obj");
+    load_model(&(scene->king), "res/king.obj");
 	
-    scene->texture_id = load_texture("res/board.png"); 
-    scene->texture_id2 = load_texture("res/lighttexture.png");
-    scene->texture_id2 = load_texture("res/else.png");
+    scene->light_texture = load_texture("res/lighttexture.png");
+    scene->dark_texture = load_texture("res/else.png");
+    scene->skybox_texture = load_texture("res/skybox.png");
+
 
     scene->material.ambient.red = 1.0;
     scene->material.ambient.green = 1.0;
@@ -30,13 +34,13 @@ void init_scene(Scene* scene)
     scene->material.specular.green = 1.0;
     scene->material.specular.blue = 1.0;
 
-    scene->material.shininess = 0.0;
+    scene->material.shininess = 1.0;
 }
 
 void set_lighting()
 {
     float ambient_light[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    float diffuse_light[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    float diffuse_light[] = { 1.5f, 1.5f, 1.5f, 1.0f };
     float specular_light[] = { 5.0f, 5.0f, 5.0f, 1.0f };
     float position[] = { 10.0f, 10.0f, 20.0f, 1.0f };
 
@@ -73,61 +77,15 @@ void set_material(const Material* material)
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &(material->shininess));
 }
 
-void draw_scene(const Scene* scene){
+void draw_scene(Scene* scene){
 
     set_material(&(scene->material));
     set_lighting();
     draw_origin();
-    glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, scene->texture_id3);
-        //glTranslatef(0.0, 3.0, 0.0);
-	    glRotatef(90,1,0,0);
-        glScalef(0.6, 0.6, 0.6);
-	draw_model(&(scene->p));
-    glPopMatrix();
-    glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, scene->texture_id2);
-        glTranslatef(0.0, 5.0, 0.0);
-	    glRotatef(90,1,0,0);
-        glScalef(0.6, 0.6, 0.6);
-        draw_model(&(scene->king));
-    glPopMatrix();
-    glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, scene->texture_id2);
-        //glTranslatef(0.0, 0.0, 0.0);
-	    glRotatef(90,1,0,0);
-        glScalef(0.6, 0.6, 0.6);
-        draw_model(&(scene->bishop));
-    glPopMatrix();
-    glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, scene->texture_id3);
-        glTranslatef(13.0, 20.0, 0.0);
-	    glRotatef(90,1,0,0);
-        glScalef(0.6, 0.6, 0.6);
-        draw_model(&(scene->king));
-    glPopMatrix();
-    glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, scene->texture_id2);
-        glTranslatef(0.0, 30.0, 0.0);
-	    glRotatef(90,1,0,0);
-        glScalef(0.6, 0.6, 0.6);
-        draw_model(&(scene->rook));
-    glPopMatrix();
-	glBindTexture(GL_TEXTURE_2D, scene->texture_id);
-    //glTranslatef(10.0, 30.0, 0.0);
-	glRotatef(90,1,0,0);
-    glScalef(30.0, 0.003, 30.0);
-    draw_model(&(scene->cube));
-
+    draw_skybox(scene);
+    init_Board(scene);
+    
 }
-
-/*void transform(){
-    glPushMatrix();
-
-
-
-    glPopMatrix();
-}*/
 
 void draw_origin()
 {
@@ -179,4 +137,55 @@ static void myShadowMatrix(float ground[4], float light[4])
     shadowMat[3][3] = dot - light[3] * ground[3];
 
     glMultMatrixf((const GLfloat*)shadowMat);
+}
+
+void init_Board(Scene* scene){
+    
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, scene->light_texture);
+        glTranslatef(3.5,3.5,-0.5);
+        glScalef(12.0, 12.0, 1.0);
+        draw_model(&(scene->cube));
+    glPopMatrix();
+    int i;
+    int j;
+    
+    //enum QubeColor thiscolor;
+    for (i = 0; i < 8; i++){
+        for (j = 0; j < 8; j++){
+            Qube q;
+            glPushMatrix();
+            glTranslatef((double)j, 0.0, 0.0);
+            glTranslatef(0.0, (double)i, 0.0);
+            if((i%2 == 0 && j%2 != 0) ||(j%2 == 0 && i%2 != 0)){ 
+                q.color = LIGHT;
+                scene->board.boardLayout[i][j] = q;
+                
+                    glBindTexture(GL_TEXTURE_2D, scene->light_texture);
+                        
+                
+            }else{
+                q.color = DARK;
+                scene->board.boardLayout[i][j] = q;
+                glBindTexture(GL_TEXTURE_2D, scene->dark_texture);
+                      
+                    
+	                
+            }
+            draw_model(&(scene->cube));
+            glPopMatrix();
+
+        }
+    }
+
+}
+
+void draw_skybox(Scene* scene){
+    glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, scene->skybox_texture);
+        //glTranslatef(1.0, 0.0, 0.0);
+        //glTranslatef(0.0, 1.0, 0.0);
+        //glScalef(1.2, 1.2, 1.2);
+	    draw_model(&(scene->skybox));
+    glPopMatrix();
 }
