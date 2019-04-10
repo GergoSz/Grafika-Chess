@@ -22,6 +22,7 @@ typedef struct Scene
     GLuint light_texture;
     GLuint dark_texture;
     GLuint skybox_texture;
+    GLuint base_texture;
 } Scene;
 
    //struct Model king;

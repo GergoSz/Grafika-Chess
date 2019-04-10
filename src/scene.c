@@ -20,6 +20,7 @@ void init_scene(Scene* scene)
     scene->light_texture = load_texture("res/lighttexture.png");
     scene->dark_texture = load_texture("res/else.png");
     scene->skybox_texture = load_texture("res/skybox.png");
+    scene->base_texture= load_texture("res/base.png");
 
 
     scene->material.ambient.red = 1.0;
@@ -141,8 +142,19 @@ static void myShadowMatrix(float ground[4], float light[4])
 
 void init_Board(Scene* scene){
     
+    static PieceType startingPieces[8][8] = {   { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK}, 
+                                        { PAWN, PAWN, PAWN, PAWN, PAWN, PAWN, PAWN, PAWN},
+                                        { EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+                                        { EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+                                        { EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+                                        { EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+                                        { PAWN, PAWN, PAWN, PAWN, PAWN, PAWN, PAWN, PAWN},
+                                        { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK} };
+
+    memmove(scene->board.pieceLayout,startingPieces,sizeof(scene->board.pieceLayout));
+
     glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, scene->light_texture);
+    glBindTexture(GL_TEXTURE_2D, scene->base_texture);
         glTranslatef(3.5,3.5,-0.5);
         glScalef(12.0, 12.0, 1.0);
         draw_model(&(scene->cube));
@@ -150,7 +162,7 @@ void init_Board(Scene* scene){
     int i;
     int j;
     
-    //enum QubeColor thiscolor;
+    //board
     for (i = 0; i < 8; i++){
         for (j = 0; j < 8; j++){
             Qube q;
@@ -158,25 +170,115 @@ void init_Board(Scene* scene){
             glTranslatef((double)j, 0.0, 0.0);
             glTranslatef(0.0, (double)i, 0.0);
             if((i%2 == 0 && j%2 != 0) ||(j%2 == 0 && i%2 != 0)){ 
-                q.color = LIGHT;
+                q.color = DARK;
+                q.x = i;
+                q.y = j;
                 scene->board.boardLayout[i][j] = q;
                 
-                    glBindTexture(GL_TEXTURE_2D, scene->light_texture);
+                    glBindTexture(GL_TEXTURE_2D, scene->dark_texture);
                         
                 
             }else{
-                q.color = DARK;
+                q.color = LIGHT;
+                q.x = i;
+                q.y = j;
                 scene->board.boardLayout[i][j] = q;
-                glBindTexture(GL_TEXTURE_2D, scene->dark_texture);
+                glBindTexture(GL_TEXTURE_2D, scene->light_texture);
                       
                     
 	                
             }
             draw_model(&(scene->cube));
+
+            glScalef(0.5,0.5,0.5);
+            glRotatef(90,1,0,0);
+            glTranslatef(0.0, 1.0, 0.0);
+
+
+            if(scene->board.pieceLayout[q.x][q.y] != NONE){
+                if(q.x < 4){
+                    glBindTexture(GL_TEXTURE_2D, scene->dark_texture);
+                    glRotatef(90,0,-1,0);
+                }else{
+                    glBindTexture(GL_TEXTURE_2D, scene->light_texture);
+                    glRotatef(90,0,1,0);
+                }
+                switch(scene->board.pieceLayout[q.x][q.y]){
+                    case PAWN:
+                        draw_model(&(scene->pawn));
+                        break;
+                    case ROOK:
+                        draw_model(&(scene->rook));
+                        break;
+                    case KNIGHT:
+                        draw_model(&(scene->knight));
+                        break;
+                    case BISHOP:
+                        draw_model(&(scene->bishop));
+                        break;
+                    case QUEEN:
+                        draw_model(&(scene->queen));
+                        break;
+                    case KING:
+                        draw_model(&(scene->king));
+                        break;
+            
+                    default:
+                        break;
+                }
+            }
+
             glPopMatrix();
 
         }
     }
+    //pieces
+   /* for(i = 0; i < 16; i++){
+        glPushMatrix();
+            if(i < 8){
+                glBindTexture(GL_TEXTURE_2D, scene->light_texture);
+                glTranslatef((double)i, 1.0, 0.5);
+            }else
+            {
+                glBindTexture(GL_TEXTURE_2D, scene->dark_texture);
+                glTranslatef((double)i-8, 6.0, 0.5);
+            }
+            glScalef(0.5,0.5,0.5);
+            glRotatef(90,1,0,0);
+            draw_model(&(scene->pawn));
+        glPopMatrix();
+    }
+    for(i = 0; i < 3; i++){
+        for(j = 0; j < 4; j++){
+            glPushMatrix();
+            if(i < 2){
+                glBindTexture(GL_TEXTURE_2D, scene->light_texture);
+                glTranslatef(((double)j * 7) + i, 0.0, 0.5);
+            }else
+            {
+                glBindTexture(GL_TEXTURE_2D, scene->dark_texture);
+                glTranslatef((((double)j-2) * 7) - i, 7.0, 0.5);
+            }
+            glScalef(0.5,0.5,0.5);
+            glRotatef(90,1,0,0);
+            switch (i)
+            {
+            case 0:
+                draw_model(&(scene->rook));
+                break;
+            case 2:
+                draw_model(&(scene->knight));
+                break;
+            case 3:
+                draw_model(&(scene->bishop));
+                break;
+            
+            default:
+                break;
+            }
+        glPopMatrix();
+        }
+    }*/
 
 }
 
@@ -185,7 +287,7 @@ void draw_skybox(Scene* scene){
         glBindTexture(GL_TEXTURE_2D, scene->skybox_texture);
         //glTranslatef(1.0, 0.0, 0.0);
         //glTranslatef(0.0, 1.0, 0.0);
-        //glScalef(1.2, 1.2, 1.2);
+        glScalef(1.2, 1.2, 1.2);
 	    draw_model(&(scene->skybox));
     glPopMatrix();
 }

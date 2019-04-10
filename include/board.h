@@ -5,7 +5,9 @@
 #define FALSE 0
 
 
+
 typedef enum {
+    EMPTY,
     PAWN,
     KNIGHT,
     BISHOP,
@@ -21,14 +23,14 @@ typedef enum {
     AVAILABLE
 } QubeColor;
 
-typedef struct Piece
+/*typedef struct Piece
 {
     
     int x,y;
     PieceType type;
     int isLight;
 
-}Piece;
+}Piece;*/
 
 typedef struct Qube
 {
@@ -42,8 +44,10 @@ typedef struct Qube
 typedef struct Board{
 
     Qube boardLayout[8][8];
-    Piece lightPieces[16];
-    Piece darkPieces[16];
+    PieceType pieceLayout[8][8];
+    /*Piece lightPieces[16];
+    Piece darkPieces[16];*/
+    
 
 }Board;
 

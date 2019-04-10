@@ -1,8 +1,9 @@
 #include "callbacks.h"
 
 
-#define VIEWPORT_RATIO (4.0 / 3.0)
+#define VIEWPORT_RATIO (16.0 / 9.0)
 #define VIEWPORT_ASPECT 50.0
+#define CAMERA_SPEED 2
 
 struct {
     int x;
@@ -55,13 +56,13 @@ void mouse(int button, int state, int x, int y)
 {
     
 	
-	// Wheel reports as button 3(scroll up) and button 4(scroll down)
-   if ((button == 3) || (button == 4)) // It's a wheel event
+	
+   if ((button == 3) || (button == 4)) 
    {
-       // Each wheel event reports like a button click, GLUT_DOWN then GLUT_UP
-       if (state == GLUT_UP) return; // Disregard redundant GLUT_UP events
+      
+       if (state == GLUT_UP) return; 
        (button == 3) ? set_camera_speed(&camera, 1) : set_camera_speed(&camera, -1);
-   }else{  // normal button event
+   }else{  
        (state == GLUT_DOWN) ? set_camera_speed(&camera, -1) : set_camera_speed(&camera, 1);
 		mouse_position.x = x;
 		mouse_position.y = y;
@@ -81,22 +82,22 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch (key) {
     case 'w':
-        set_camera_speed(&camera, 1);
+        set_camera_speed(&camera, CAMERA_SPEED);
         break;
     case 's':
-        set_camera_speed(&camera, -1);
+        set_camera_speed(&camera, -CAMERA_SPEED);
         break;
     case 'a':
-        set_camera_side_speed(&camera, 1);
+        set_camera_side_speed(&camera, CAMERA_SPEED);
         break;
     case 'd':
-        set_camera_side_speed(&camera, -1);
+        set_camera_side_speed(&camera, -CAMERA_SPEED);
         break;
 	case 'e':
-        set_camera_vertical_speed(&camera, 1);
+        set_camera_vertical_speed(&camera, CAMERA_SPEED);
         break;
 	case 'q':
-        set_camera_vertical_speed(&camera, -1);
+        set_camera_vertical_speed(&camera, -CAMERA_SPEED);
         break;
     case 't':
         if (is_preview_visible) {

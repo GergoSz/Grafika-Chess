@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     glutInitWindowSize(1600, 900);     
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
-    window = glutCreateWindow("Scene with a camera");
+    window = glutCreateWindow("Chess stuf");
     glutSetWindow(window);
 
     init_opengl();

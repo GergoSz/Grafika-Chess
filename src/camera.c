@@ -9,6 +9,9 @@
 #include "scene.h"
 #include "camera.h"
 
+
+#define CAMERA_SPEED 2
+
 void init_camera(Camera* camera)
 {
     camera->position.x = 3.564245; //x: 1.564245,y: 1.807708,z: 1.117000
@@ -33,17 +36,17 @@ void update_camera(Camera* camera, double time)
 
     //COLLISION FOR MAP EDGES
     if (camera->position.x >= 20) {
-		camera->position.x += -1.0 * time;
+		camera->position.x += -CAMERA_SPEED * time;
 	}
 	else if (camera->position.x <= -5) {
-		camera->position.x += 1.0 * time;
+		camera->position.x += CAMERA_SPEED * time;
 	}
 
 	if (camera->position.y >= 20) {
-    	camera->position.y += -1.0 * time;
+    	camera->position.y += -CAMERA_SPEED * time;
 	}
 	else if (camera->position.y <= -5) {
-    	camera->position.y += 1.0 * time;
+    	camera->position.y += CAMERA_SPEED * time;
 	}
    // check_piece_collisions(&(scene->king), camera);
     //END OF COLLISION
