@@ -4,7 +4,7 @@
 #include "camera.h"
 #include "texture.h"
 #include "model.h"
-#include "board.h"
+#include "boardstruct.h"
 
 typedef struct Scene
 {
@@ -23,6 +23,7 @@ typedef struct Scene
     GLuint dark_texture;
     GLuint selected_texture;
     GLuint available_texture;
+    GLuint moving_texture;
     GLuint skybox_texture;
     GLuint base_texture;
 } Scene;
@@ -54,12 +55,6 @@ void draw_scene( Scene* scene);
  */
 void draw_origin();
 
-void init_Board(Scene* scene);
 
-void render_Board(Scene* scene);
-
-void toggleSelected(Scene* scene);
-
-void moveSelection(Scene* scene, int x, int y);
 
 #endif /* SCENE_H */

@@ -4,54 +4,23 @@
 #define TRUE 1
 #define FALSE 0
 
+#include "scene.h"
 
 
-typedef enum {
-    EMPTY,
-    PAWN,
-    KNIGHT,
-    BISHOP,
-    ROOK,
-    QUEEN,
-    KING
-} PieceType;
+void init_Board(Scene* scene);
 
-typedef enum {
-    LIGHT,
-    DARK,
-    SELECTED,
-    AVAILABLE
-} QubeColor;
+void render_Board(Scene* scene);
 
-/*typedef struct Piece
-{
-    
-    int x,y;
-    PieceType type;
-    int isLight;
+void changeBoard(Scene* scene);
 
-}Piece;*/
+void toggleSelected(Scene* scene);
 
-typedef struct Qube
-{
-    int x,y;
-    int isLightQube;
-    QubeColor defaultColor;
-    QubeColor color;
+void moveSelection(Scene* scene, int x, int y);
 
-}Qube;
+void showAvailableMoves(Scene* scene, Piece piece);
 
+void resetAvailables(Scene* scene);
 
-typedef struct Board{
-
-    Qube boardLayout[8][8];
-    PieceType pieceLayout[8][8];
-    int selectedX;
-    int selectedY;
-    /*Piece lightPieces[16];
-    Piece darkPieces[16];*/
-    
-
-}Board;
+//void getPAWNMoves(Scene* scene, Piece piece);
 
 #endif

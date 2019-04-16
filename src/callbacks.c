@@ -122,7 +122,6 @@ void keyboard(unsigned char key, int x, int y)
     case '4':
         moveSelection(&scene, 0, -1);
         break;
-    
     case '6':
         moveSelection(&scene, 0, 1);
         break;
