@@ -11,16 +11,13 @@
 #define FALSE 0
 
 void init_Board(Scene* scene){
-
+	printf("INIT BOARD!");
     int i;
     int j;
 
     scene->board.selectedX = 4;
-    scene->board.selectedY = 4;
-    scene->board.selectionMoved = TRUE;
+    scene->board.selectedY = 5;
     scene->board.moving = FALSE;
-
-    insertFirst(0, 0, 0);
 
     //toggleSelected(&scene);
 
@@ -41,7 +38,7 @@ void init_Board(Scene* scene){
                                                 { ROOK,     KNIGHT, BISHOP, QUEEN,  KING,   BISHOP, KNIGHT, ROOK}};
 
     static Piece startingPieces[8][8];
-
+    GLuint sel = 1;
     for (i = 0; i < 8; i++){
         for (j = 0; j < 8; j++){
             Piece p;
@@ -49,6 +46,12 @@ void init_Board(Scene* scene){
             p.y = j;
             p.firstMove = TRUE;
             p.type = startingPositions[i][j];
+            if(p.type != EMPTY){
+                p.stencilIndex = sel;
+                sel++;
+            }else{
+                p.stencilIndex = 0;
+            }
             if(i > 1){
                 p.isLight = TRUE;
             }else{
@@ -68,22 +71,24 @@ void init_Board(Scene* scene){
                 q.defaultColor = DARK;
                 q.x = i;
                 q.y = j;
+                q.stencilIndex = sel;    
+                sel++;
                 scene->board.boardLayout[i][j] = q;
             }else{
                 q.color = LIGHT;
                 q.defaultColor = LIGHT;
                 q.x = i;
-                q.y = j;
+                q.y = j;                
+                q.stencilIndex = sel;
+                sel++;
                 scene->board.boardLayout[i][j] = q;
             }
         }
     }
 
-    scene->board.boardLayout[scene->board.selectedX][scene->board.selectedX].color = SELECTED;
-
 }
 
-void render_Board(Scene* scene){
+void render_Board(Scene* scene, GLenum mode){
 
     //boardchange
     if(scene->board.selectionMoved){
@@ -95,6 +100,7 @@ void render_Board(Scene* scene){
     glBindTexture(GL_TEXTURE_2D, scene->base_texture);
         glTranslatef(3.5,3.5,-0.5);
         glScalef(12.0, 12.0, 1.0);
+        glStencilFunc(GL_ALWAYS, 0, -1);
         draw_model(&(scene->cube));
     glPopMatrix();
 
@@ -112,22 +118,26 @@ void render_Board(Scene* scene){
             //Draw board cubes
             switch(scene->board.boardLayout[i][j].color){
                 case DARK:
+                    glStencilFunc(GL_ALWAYS, scene->board.boardLayout[i][j].stencilIndex, -1);
                     glBindTexture(GL_TEXTURE_2D, scene->dark_texture);
                     break;
                 case LIGHT:
+                    glStencilFunc(GL_ALWAYS, scene->board.boardLayout[i][j].stencilIndex, -1);
                     glBindTexture(GL_TEXTURE_2D, scene->light_texture);
                     break;
                 case SELECTED:
+                    glStencilFunc(GL_ALWAYS, scene->board.boardLayout[i][j].stencilIndex, -1);
                     glBindTexture(GL_TEXTURE_2D, scene->selected_texture);
                     break;
                 case AVAILABLE:
+                    glStencilFunc(GL_ALWAYS, scene->board.boardLayout[i][j].stencilIndex, -1);
                     glBindTexture(GL_TEXTURE_2D, scene->available_texture);
                     break;
                 case MOVING:
+                    glStencilFunc(GL_ALWAYS, scene->board.boardLayout[i][j].stencilIndex, -1);
                     glBindTexture(GL_TEXTURE_2D, scene->moving_texture);
                     break;
             }
-
             draw_model(&(scene->cube));
 
             glScalef(0.5,0.5,0.5);
@@ -152,21 +162,27 @@ void render_Board(Scene* scene){
                 }
                 switch(scene->board.pieceLayout[i][j].type){
                     case PAWN:
+                        glStencilFunc(GL_ALWAYS, scene->board.pieceLayout[i][j].stencilIndex, -1);
                         draw_model(&(scene->pawn));
                         break;
                     case ROOK:
+                        glStencilFunc(GL_ALWAYS, scene->board.pieceLayout[i][j].stencilIndex, -1);
                         draw_model(&(scene->rook));
                         break;
                     case KNIGHT:
+                        glStencilFunc(GL_ALWAYS, scene->board.pieceLayout[i][j].stencilIndex, -1);
                         draw_model(&(scene->knight));
                         break;
                     case BISHOP:
+                        glStencilFunc(GL_ALWAYS, scene->board.pieceLayout[i][j].stencilIndex, -1);
                         draw_model(&(scene->bishop));
                         break;
                     case QUEEN:
+                        glStencilFunc(GL_ALWAYS, scene->board.pieceLayout[i][j].stencilIndex, -1);
                         draw_model(&(scene->queen));
                         break;
                     case KING:
+                        glStencilFunc(GL_ALWAYS, scene->board.pieceLayout[i][j].stencilIndex, -1);
                         draw_model(&(scene->king));
                         break;
             
@@ -183,106 +199,81 @@ void render_Board(Scene* scene){
 
 void changeBoard(Scene* scene){
     //Piece p = scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY];
-    resetAvailables(scene);
+    resetBoardChanges(scene, AVAILABLE);
+    resetBoardChanges(scene, MOVING);
     Piece p = scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY];
     showAvailableMoves(scene, p);
     scene->board.selectionMoved = FALSE;
 }
 
-void toggleSelected(Scene* scene){
-    if(scene->board.moving == FALSE && scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY].type != EMPTY){
-        scene->board.moving = TRUE;
-        scene->board.boardLayout[scene->board.selectedX][scene->board.selectedY].color = MOVING;
-    }else{
-        resetAvailables(scene);
-        scene->board.moving = FALSE;
-        scene->board.boardLayout[scene->board.selectedX][scene->board.selectedY].color = SELECTED;
-        scene->board.movingBaseX = 0;
-        scene->board.movingBaseY = 0;
-    }
-
-    //printf("asd");
-    /*if(scene->board.boardLayout[scene->board.selectedX][scene->board.selectedY].color != SELECTED){
-        scene->board.boardLayout[scene->board.selectedX][scene->board.selectedX].color = SELECTED;
-        return;
-    }else{
-        scene->board.boardLayout[scene->board.selectedX][scene->board.selectedX].color = scene->board.boardLayout[scene->board.selectedX][scene->board.selectedX].defaultColor;
-    }*/
-}
-
-void moveSelection(Scene* scene, int x, int y){
-//TODO: DEFAULTCOLOR fixed  (I dont remember what this means but i think i fixed it)
-    if(scene->board.moving == TRUE){
-        
-        printf("Only move if move is in list!\n");
-        
-        if(isInList((scene->board.movingBaseX + x), (scene->board.movingBaseY + y)) == TRUE ){
-            printf("Move\n");
-            moveSelectedPiece(scene, x, y);
-        }
-
-    }else{
-        printf("%d, %d", scene->board.selectedX, scene->board.selectedY);
-        if((scene->board.selectedX + x < 8) && (scene->board.selectedX + x >= 0) && (scene->board.selectedY + y < 8) && (scene->board.selectedY + y >= 0)){
-            scene->board.boardLayout[scene->board.selectedX][scene->board.selectedY].color = scene->board.boardLayout[scene->board.selectedX][scene->board.selectedY].defaultColor;
-            scene->board.boardLayout[scene->board.selectedX + x][scene->board.selectedY + y].color = SELECTED;
-            scene->board.selectedX += x;
-            scene->board.selectedY += y;
-            scene->board.selectionMoved = TRUE;
-            
-            //resetList();
+void pieceClicked(Scene* scene, GLuint stencilIndex){
+    int i;
+    int j;
+    for (i = 0; i < 8; i++){
+        for (j = 0; j < 8; j++){
+            if( (scene->board.pieceLayout[i][j].stencilIndex == stencilIndex) && scene->board.pieceLayout[i][j].isLight){
+                printf("%d, %d, %u\n", i, j, scene->board.pieceLayout[i][j].stencilIndex);
+                resetBoardChanges(scene, SELECTED);
+                scene->board.boardLayout[i][j].color = SELECTED;
+                scene->board.selectedX = i;
+                scene->board.selectedY = j;
+                scene->board.selectionMoved = TRUE;
+                changeBoard(scene);
+                break;break;
+            }
         }
     }
 
-    /*if(scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY].type != EMPTY){
-        showAvailableMoves(&scene, scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY]);
-    }*/
+
 }
 
-void moveSelectedPiece(Scene* scene, int x, int y){
+void qubeClicked(Scene* scene, GLuint stencilIndex){
 
-scene->board.boardLayout[scene->board.selectedX + scene->board.movingBaseX][scene->board.selectedY + scene->board.movingBaseY].color = AVAILABLE;
-
-    scene->board.movingBaseX += x;
-    scene->board.movingBaseY += y;
-
-    //scene->board.pieceLayout[scene->board.selectedX + x][scene->board.selectedY + y].type = scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY].type;
-    //scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY].type = EMPTY;
-
-
-
-    //scene->board.boardLayout[scene->board.selectedY + x][scene->board.selectedY + y].color = AVAILABLE;
-    scene->board.boardLayout[scene->board.selectedX + scene->board.movingBaseX][scene->board.selectedY + scene->board.movingBaseY].color = MOVING;
+    int i;
+    int j;
+    for (i = 0; i < 8; i++){
+        for (j = 0; j < 8; j++){
+            if(scene->board.boardLayout[i][j].stencilIndex == stencilIndex && scene->board.boardLayout[i][j].color == AVAILABLE){
+                printf("%d, %d, %u\n", i, j, scene->board.boardLayout[i][j].stencilIndex);
+                Piece p = scene->board.pieceLayout[i][j];
+                scene->board.pieceLayout[i][j] = scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY];
+                p.type = EMPTY;
+                scene->board.pieceLayout[scene->board.selectedX][scene->board.selectedY] = p;
+                scene->board.selectedX = i;
+                scene->board.selectedY = j;
+                scene->board.selectionMoved = TRUE;
+                changeBoard(scene);
+                break;break;
+            }
+        }
+    }
 
 }
 
 void showAvailableMoves(Scene* scene, Piece piece){
         switch(piece.type){
             case PAWN:
-                resetList();
                 showPAWNAvailables(scene);
-                printList();
                 break;
             case ROOK:
-                //draw_model(&(scene->rook));
+                showROOKAvailables(scene);
                 break;
             case KNIGHT:
-                //draw_model(&(scene->knight));
+                showKNIGHTAvailables(scene);
                 break;
             case BISHOP:
-                //draw_model(&(scene->bishop));
+                showBISHOPAvailables(scene);
                 break;
             case QUEEN:
-                //draw_model(&(scene->queen));
+                showQUEENAvailables(scene);
                 break;
             case KING:
-                //draw_model(&(scene->king));
+                showKINGAvailables(scene);
                 break;
-            
         }
 }
 
-void resetAvailables(Scene* scene){
+void resetBoardChanges(Scene* scene, QubeColor colour){
 
     int i = 0;
     int j = 0;
@@ -291,15 +282,43 @@ void resetAvailables(Scene* scene){
 
     for (i = 0; i < 8; i++){
         for (j = 0; j < 8; j++){
-            if((scene->board.boardLayout[i][j].color == AVAILABLE) || (scene->board.boardLayout[i][j].color == MOVING)){
+            if(scene->board.boardLayout[i][j].color == colour){
                 scene->board.boardLayout[i][j].color = scene->board.boardLayout[i][j].defaultColor;
             }
         }
     }
 
 }
-/*void getPAWNMoves(Scene* scene, Piece piece){
-    printf("get");
-    scene->board.boardLayout[piece.x][piece.y].color = AVAILABLE;
 
-}*/
+//writes all legal move to the list
+void setAllLegalMoves(Scene* scene){
+    resetList();
+    int i, j;
+    for (i = 0; i < 8; i++){
+        for (j = 0; j < 8; j++){
+            resetBoardChanges(scene, AVAILABLE);
+            resetBoardChanges(scene, SELECTED);
+            scene->board.selectedX = i;
+            scene->board.selectedY = j;
+            showAvailableMoves(scene, scene->board.pieceLayout[i][j]);
+        }
+    }
+    printList();
+}
+
+void setLegalMoves(Scene* scene, int isLight){
+    resetList();
+    int i, j;
+    for (i = 0; i < 8; i++){
+        for (j = 0; j < 8; j++){
+            if(scene->board.pieceLayout[i][j].isLight == isLight){
+                resetBoardChanges(scene, AVAILABLE);
+                resetBoardChanges(scene, SELECTED);
+                scene->board.selectedX = i;
+                scene->board.selectedY = j;
+                showAvailableMoves(scene, scene->board.pieceLayout[i][j]);
+            }
+        }
+    }
+    printList();
+}

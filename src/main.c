@@ -17,6 +17,7 @@ void set_callbacks()
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboard_up);
     glutIdleFunc(idle);
+    glutPassiveMotionFunc(processPassiveMouseMotion);
 }
 
 /**
@@ -28,12 +29,12 @@ int main(int argc, char* argv[])
 
     glutInit(&argc, argv);
 
-    glutInitWindowSize(1600, 900);     
+    glutInitWindowSize(800, 450);     
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
     window = glutCreateWindow("Chess stuf");
     glutSetWindow(window);
-
+    
     init_opengl();
     init_scene(&scene);
     init_camera(&camera);

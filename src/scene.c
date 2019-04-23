@@ -17,6 +17,7 @@ void init_scene(Scene* scene)
     load_model(&(scene->queen), "res/queen.obj");
     load_model(&(scene->king), "res/king.obj");
 	
+    scene->help_texture = load_texture("res/help.png");
     scene->light_texture = load_texture("res/lighttexture.png");
     scene->dark_texture = load_texture("res/else.png");
     scene->selected_texture= load_texture("res/selected.png");
@@ -88,9 +89,9 @@ void draw_scene(Scene* scene){
 
     set_material(&(scene->material));
     set_lighting();
-    draw_origin();
+    //draw_origin();
     draw_skybox(scene);
-    render_Board(scene);
+    render_Board(scene, GL_SELECT);
     
 }
 

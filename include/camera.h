@@ -17,6 +17,7 @@ typedef struct Camera
  * Is the texture preview visible?
  */
 int is_preview_visible;
+int esc;
 
 /**
  * Initialize the camera to the start position.

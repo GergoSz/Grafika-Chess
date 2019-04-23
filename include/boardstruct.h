@@ -25,20 +25,22 @@ typedef enum {
     AVAILABLE
 } QubeColor;
 
-typedef struct Piece
-{
+typedef struct Piece{
+
     int x,y;
     PieceType type;
     int isLight;
     int firstMove;
+    GLuint stencilIndex;
 
 }Piece;
 
-typedef struct Qube
-{
+typedef struct Qube{
+
     int x,y;
     QubeColor defaultColor;
     QubeColor color;
+    GLuint stencilIndex;
 
 }Qube;
 

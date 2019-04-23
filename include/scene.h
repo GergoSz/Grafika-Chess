@@ -19,6 +19,7 @@ typedef struct Scene
     Model skybox;
     Material material;
     Board board;
+    GLuint help_texture;
     GLuint light_texture;
     GLuint dark_texture;
     GLuint selected_texture;

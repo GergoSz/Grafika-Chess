@@ -6,21 +6,21 @@
 
 #include "scene.h"
 
+#include <GL/glut.h>
+
 
 void init_Board(Scene* scene);
 
-void render_Board(Scene* scene);
+void render_Board(Scene* scene, GLenum mode);
 
 void changeBoard(Scene* scene);
 
-void toggleSelected(Scene* scene);
-
-void moveSelection(Scene* scene, int x, int y);
+void pieceClicked(Scene* scene, GLuint stencilIndex);
 
 void showAvailableMoves(Scene* scene, Piece piece);
 
-void resetAvailables(Scene* scene);
+void resetBoardChanges(Scene* scene, QubeColor colour);
 
-//void getPAWNMoves(Scene* scene, Piece piece);
+void setAllLegalMoves(Scene* scene);
 
 #endif

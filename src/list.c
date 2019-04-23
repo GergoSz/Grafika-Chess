@@ -7,8 +7,9 @@
 #define FALSE 0
 
 struct node {
-   int x;
-   int y;
+   int fromX, fromY;
+   int toX, toY;
+   unsigned int stencilIndex;
    int key;
    struct node *next;
 };
@@ -23,7 +24,7 @@ void printList() {
 	
    //start from the beginning
    while(ptr != NULL) {
-      printf("(%d,%d,%d) ",ptr->key,ptr->x,ptr->y);
+      printf("(%d,%d,%d,%d,%d) : ",ptr->key,ptr->fromX,ptr->fromY,ptr->toX,ptr->toY,ptr->stencilIndex);
       ptr = ptr->next;
    }
 	
@@ -31,13 +32,16 @@ void printList() {
 }
 
 //insert link at the first location
-void insertFirst(int key, int x, int y) {
+void insertFirst(int key, int fromX, int fromY, int toX, int toY, unsigned int stencilIndex) {
    //create a link
    struct node *link = (struct node*) malloc(sizeof(struct node));
 	
    link->key = key;
-   link->x = x;
-   link->y = y;
+   link->fromX = fromX;
+   link->fromY = fromY;
+   link->toX = toX;
+   link->toY = toY;
+   link->stencilIndex = stencilIndex;
 	
    //point it to old first node
    link->next = head;
@@ -76,7 +80,7 @@ int length() {
 }
 
 //find a link with given key
-struct node* find(int key) {
+struct node* findInList(int key) {
 
    //start from the first link
    struct node* current = head;
@@ -195,14 +199,14 @@ void resetList(){
     }
 }
 
-int isInList(int x, int y){
+int isInList(int fromX, int fromY, int toX, int toY, unsigned int stencilIndex){
     int len = length();
     int i = 0;
     printf("ISINLIST?");
     for(i = 0; i < len; i++){
         printf("%d", i);
-        struct node *thisNode = find(i);
-        if((thisNode->x == x) && (thisNode->y == y)){
+        struct node *thisNode = findInList(i);
+        if((thisNode->fromX == fromX) && (thisNode->fromY == fromY) && (thisNode->toX == toX) && (thisNode->toY == toY) && (thisNode->stencilIndex == stencilIndex)){
             return TRUE;
         }
     }

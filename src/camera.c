@@ -10,19 +10,20 @@
 #include "camera.h"
 
 
-#define CAMERA_SPEED 2
+#define CAMERA_SPEED 5
 
 void init_camera(Camera* camera)
 {
-    camera->position.x = 3.564245; //x: 1.564245,y: 1.807708,z: 1.117000
-    camera->position.y = 3.807708;
-    camera->position.z = 3.117000;
-    camera->rotation.x = 336.0; //x: 336.000000,y: 0.000000,z: 229.000000
+    camera->position.x = 3.254400; //x: 1.564245,y: 1.807708,z: 1.117000
+    camera->position.y = -3.347974;//x: 3.254400,y: -3.347974,z: 6.289003
+    camera->position.z = 6.289003; 
+    camera->rotation.x = 317.000000; //x: 336.000000,y: 0.000000,z: 229.000000
     camera->rotation.y = 0.0;
-    camera->rotation.z = 229.0;
+    camera->rotation.z = 89.000000;//x: 317.000000,y: 0.000000,z: 89.000000
     camera->speed.x = 0.0;
     camera->speed.y = 0.0;
     camera->speed.z = 0.0;
+    //camera->help_texture = load_texture("res/else.png");
 
     is_preview_visible = FALSE;
 }
@@ -77,8 +78,8 @@ void set_view(const Camera* camera)
 
 void rotate_camera(Camera* camera, double horizontal, double vertical)
 {
-    camera->rotation.z += horizontal;
-    camera->rotation.x += vertical;
+    camera->rotation.z += horizontal / 2;
+    camera->rotation.x += vertical / 2;
 
     if (camera->rotation.z < 0) {
         camera->rotation.z += 360.0;
@@ -113,6 +114,36 @@ void set_camera_vertical_speed(Camera* camera, double speed){
 
 void show_texture_preview()
 {
+
+glLoadIdentity();
+   glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_COLOR_MATERIAL);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, load_texture("res/crosshair.png"));
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0);
+    glVertex3f(-1, 1, -50);
+    glTexCoord2f(1, 0);
+    glVertex3f(1, 1, -50);
+    glTexCoord2f(1, 1);
+    glVertex3f(1, -1, -50);
+    glTexCoord2f(0, 1);
+    glVertex3f(-1, -1, -50);
+    glEnd();
+
+    glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+
+}
+
+void show_help()
+{
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_MATERIAL);
@@ -121,16 +152,16 @@ void show_texture_preview()
     glLoadIdentity();
 
     glColor3f(1, 1, 1);
-
+    glBindTexture(GL_TEXTURE_2D, load_texture("res/help.png"));
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
-    glVertex3f(-1, 1, -3);
+    glVertex3f(-1, 1, -23);
     glTexCoord2f(1, 0);
-    glVertex3f(1, 1, -3);
+    glVertex3f(1, 1, -23);
     glTexCoord2f(1, 1);
-    glVertex3f(1, -1, -3);
+    glVertex3f(1, -1, -23);
     glTexCoord2f(0, 1);
-    glVertex3f(-1, -1, -3);
+    glVertex3f(-1, -1, -23);
     glEnd();
 
     glDisable(GL_COLOR_MATERIAL);
